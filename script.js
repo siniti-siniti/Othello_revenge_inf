@@ -3,6 +3,12 @@ const ctx = canvas.getContext("2d");
 const scoreDiv = document.getElementById("score");
 const messageDiv = document.getElementById("message");
 const specialCountDiv = document.getElementById("specialCount");
+const difficultySelect = document.getElementById("difficulty");
+
+let difficulty = difficultySelect.value;
+difficultySelect.addEventListener("change", e => {
+    difficulty = e.target.value;
+});
 
 const size = 8;
 const cellSize = canvas.width / size;
@@ -177,13 +183,14 @@ function triggerRevenge(x, y, newColor) {
 function nextTurn() {
     player = player === 'B' ? 'W' : 'B';
     if (!hasValidMove(player)) {
+        messageDiv.innerText = `${player === 'B' ? 'Black' : 'White'} has no valid moves. Pass!`;
         player = player === 'B' ? 'W' : 'B';
         if (!hasValidMove(player)) {
             gameOver = true;
             messageDiv.innerText = "Game Over!";
             return;
         }
-        nextTurn();
+        setTimeout(nextTurn, 1000);
         return;
     }
     drawBoard();
@@ -213,7 +220,21 @@ function aiMove() {
         nextTurn();
         return;
     }
-    let [x, y] = moves[Math.floor(Math.random() * moves.length)];
+
+    let x, y;
+    if (difficulty === 'easy') {
+        [x, y] = moves[Math.floor(Math.random() * moves.length)];
+    } else {
+        let maxFlips = -1;
+        for (let move of moves) {
+            let flips = getFlips(move[0], move[1], 'W');
+            if (flips > maxFlips) {
+                maxFlips = flips;
+                [x, y] = move;
+            }
+        }
+    }
+
     let flips = getFlips(x, y, 'W');
     applyMove(x, y, 'W');
     drawBoard();
