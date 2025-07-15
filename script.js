@@ -97,7 +97,7 @@ function handleClick(e) {
         if (specialPlayer === 'B' && board[y][x] === 'B') {
             triggerRevenge(x, y, 'W');
         }
-        return; // リベンジ中はこれ以外無視
+        return;
     }
 
     let flips = getFlips(x, y, player);
@@ -152,7 +152,7 @@ function startRevenge(triggeredBy) {
                     ownDiscs.push([xx, yy]);
         if (ownDiscs.length) {
             let [fx, fy] = ownDiscs[Math.floor(Math.random() * ownDiscs.length)];
-            triggerRevenge(fx, fy, 'B');
+            triggerRevenge(fx, fy, 'B'); // ←必ず相手色
         }
     }
 }
