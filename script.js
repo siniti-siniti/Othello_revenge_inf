@@ -29,7 +29,6 @@ function drawBoard() {
             ctx.fillStyle = "#388e3c";
             ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
 
-            // 通常ターンのみハイライト
             if (!specialMode) {
                 let flips = getFlips(x, y, player);
                 if (flips > 0) {
@@ -94,21 +93,13 @@ function handleClick(e) {
     let x = Math.floor(e.offsetX / cellSize);
     let y = Math.floor(e.offsetY / cellSize);
 
-    // リベンジ中（プレイヤーの番）
-    if (specialMode && specialPlayer === 'B') {
-        if (board[y][x] === 'B') {
+    if (specialMode) {
+        if (specialPlayer === 'B' && board[y][x] === 'B') {
             triggerRevenge(x, y, 'W');
         }
-        return;
-    }
-    if (specialMode && specialPlayer === 'W') {
-        if (board[y][x] === 'W') {
-            triggerRevenge(x, y, 'B');
-        }
-        return;
+        return; // リベンジ中はこれ以外無視
     }
 
-    // 通常ターン
     let flips = getFlips(x, y, player);
     if (flips === 0) return;
 
@@ -151,19 +142,18 @@ function startRevenge(triggeredBy) {
     let level = chainCount >= 3 ? 3 : chainCount;
     document.body.classList.add(`revenge-level-${level}-${specialPlayer === 'B' ? 'black' : 'white'}`);
 
-    if (specialPlayer !== player) {
-        // AIが自分の石を選んでリベンジ
+    if (specialPlayer === 'B') {
+        messageDiv.innerText = "REVENGE! Click a black disc to flip it.";
+    } else {
         let ownDiscs = [];
         for (let yy = 0; yy < size; yy++)
             for (let xx = 0; xx < size; xx++)
-                if (board[yy][xx] === specialPlayer)
+                if (board[yy][xx] === 'W')
                     ownDiscs.push([xx, yy]);
         if (ownDiscs.length) {
             let [fx, fy] = ownDiscs[Math.floor(Math.random() * ownDiscs.length)];
-            triggerRevenge(fx, fy, specialPlayer === 'B' ? 'W' : 'B');
+            triggerRevenge(fx, fy, 'B');
         }
-    } else {
-        messageDiv.innerText = `REVENGE! Click a ${specialPlayer === 'B' ? 'black' : 'white'} disc to flip it.`;
     }
 }
 
