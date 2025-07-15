@@ -94,8 +94,8 @@ function handleClick(e) {
     let y = Math.floor(e.offsetY / cellSize);
 
     if (specialMode) {
-        if (specialPlayer === 'B' && board[y][x] === 'B') {
-            triggerRevenge(x, y, 'W');
+        if (specialPlayer === 'B' && board[y][x] === 'W') {
+            triggerRevenge(x, y, 'B');
         }
         return;
     }
@@ -107,7 +107,7 @@ function handleClick(e) {
     drawBoard();
 
     if (flips >= 2) {
-        startRevenge(player === 'B' ? 'W' : 'B'); // 相手にリベンジ権を渡す
+        startRevenge(player === 'B' ? 'W' : 'B');
     } else {
         nextTurn();
     }
@@ -143,16 +143,16 @@ function startRevenge(triggeredByOpponent) {
     document.body.classList.add(`revenge-level-${level}-${specialPlayer === 'B' ? 'black' : 'white'}`);
 
     if (specialPlayer === 'B') {
-        messageDiv.innerText = "REVENGE! Click a black disc to flip it.";
+        messageDiv.innerText = "REVENGE! Click a white disc to flip it.";
     } else {
-        let ownDiscs = [];
+        let opponentDiscs = [];
         for (let yy = 0; yy < size; yy++)
             for (let xx = 0; xx < size; xx++)
-                if (board[yy][xx] === 'W')
-                    ownDiscs.push([xx, yy]);
-        if (ownDiscs.length) {
-            let [fx, fy] = ownDiscs[Math.floor(Math.random() * ownDiscs.length)];
-            triggerRevenge(fx, fy, 'B');
+                if (board[yy][xx] === 'B')
+                    opponentDiscs.push([xx, yy]);
+        if (opponentDiscs.length) {
+            let [fx, fy] = opponentDiscs[Math.floor(Math.random() * opponentDiscs.length)];
+            triggerRevenge(fx, fy, 'W');
         }
     }
 }
@@ -164,7 +164,7 @@ function triggerRevenge(x, y, newColor) {
     drawBoard();
 
     if (flips >= 2) {
-        startRevenge(newColor === 'B' ? 'W' : 'B'); // 相手に再び渡す
+        startRevenge(newColor === 'B' ? 'W' : 'B');
     } else {
         specialMode = false;
         chainCount = 0;
@@ -219,7 +219,7 @@ function aiMove() {
     drawBoard();
 
     if (flips >= 2) {
-        startRevenge('B'); // ←白が置いた後は黒にリベンジ権
+        startRevenge('B');
     } else {
         nextTurn();
     }
