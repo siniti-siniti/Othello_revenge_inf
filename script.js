@@ -107,7 +107,7 @@ function handleClick(e) {
     drawBoard();
 
     if (flips >= 2) {
-        startRevenge(player);
+        startRevenge(player === 'B' ? 'W' : 'B'); // 相手にリベンジ権を渡す
     } else {
         nextTurn();
     }
@@ -131,11 +131,11 @@ function applyMove(x, y, p) {
     }
 }
 
-function startRevenge(triggeredBy) {
+function startRevenge(triggeredByOpponent) {
     specialCount++;
     updateSpecialCount();
     specialMode = true;
-    specialPlayer = triggeredBy;
+    specialPlayer = triggeredByOpponent;
     chainCount++;
 
     document.body.className = "";
@@ -152,7 +152,7 @@ function startRevenge(triggeredBy) {
                     ownDiscs.push([xx, yy]);
         if (ownDiscs.length) {
             let [fx, fy] = ownDiscs[Math.floor(Math.random() * ownDiscs.length)];
-            triggerRevenge(fx, fy, 'B'); // ←必ず相手色
+            triggerRevenge(fx, fy, 'B');
         }
     }
 }
@@ -164,7 +164,7 @@ function triggerRevenge(x, y, newColor) {
     drawBoard();
 
     if (flips >= 2) {
-        startRevenge(newColor === 'B' ? 'W' : 'B');
+        startRevenge(newColor === 'B' ? 'W' : 'B'); // 相手に再び渡す
     } else {
         specialMode = false;
         chainCount = 0;
@@ -219,7 +219,7 @@ function aiMove() {
     drawBoard();
 
     if (flips >= 2) {
-        startRevenge('W');
+        startRevenge('B'); // ←白が置いた後は黒にリベンジ権
     } else {
         nextTurn();
     }
