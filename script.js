@@ -187,7 +187,20 @@ function nextTurn() {
         player = player === 'B' ? 'W' : 'B';
         if (!hasValidMove(player)) {
             gameOver = true;
-            messageDiv.innerText = "Game Over!";
+            let b = 0, w = 0;
+            for (let row of board) {
+                for (let cell of row) {
+                    if (cell === 'B') b++;
+                    if (cell === 'W') w++;
+                }
+            }
+            if (b > w) {
+                messageDiv.innerText = `Game Over! Black wins (${b} vs ${w})`;
+            } else if (w > b) {
+                messageDiv.innerText = `Game Over! White wins (${w} vs ${b})`;
+            } else {
+                messageDiv.innerText = `Game Over! It's a draw (${b} vs ${w})`;
+            }
             return;
         }
         setTimeout(nextTurn, 1000);
