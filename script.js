@@ -29,7 +29,7 @@ function drawBoard() {
             ctx.fillStyle = "#388e3c";
             ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
 
-            // 通常ターンのみハイライトを出す
+            // 通常ターンのみハイライト
             if (!specialMode) {
                 let flips = getFlips(x, y, player);
                 if (flips > 0) {
@@ -94,7 +94,6 @@ function handleClick(e) {
     let x = Math.floor(e.offsetX / cellSize);
     let y = Math.floor(e.offsetY / cellSize);
 
-    // リベンジ中
     if (specialMode && specialPlayer === 'W') {
         if (board[y][x] === 'W') {
             triggerRevenge(x, y, 'B');
@@ -102,7 +101,6 @@ function handleClick(e) {
         return;
     }
 
-    // 通常ターン
     let flips = getFlips(x, y, player);
     if (flips === 0) return;
 
@@ -167,7 +165,8 @@ function triggerRevenge(x, y, newColor) {
     drawBoard();
 
     if (flips >= 2) {
-        startRevenge(newColor);
+        // ここが重要！
+        startRevenge(newColor === 'B' ? 'W' : 'B');
     } else {
         specialMode = false;
         chainCount = 0;
@@ -186,7 +185,7 @@ function nextTurn() {
             messageDiv.innerText = "Game Over!";
             return;
         }
-        nextTurn(); // ←ここ重要！
+        nextTurn(); // 再帰的にターン回し
         return;
     }
     drawBoard();
