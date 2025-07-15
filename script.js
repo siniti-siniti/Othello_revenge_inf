@@ -94,6 +94,13 @@ function handleClick(e) {
     let x = Math.floor(e.offsetX / cellSize);
     let y = Math.floor(e.offsetY / cellSize);
 
+    // リベンジ中（プレイヤーの番）
+    if (specialMode && specialPlayer === 'B') {
+        if (board[y][x] === 'B') {
+            triggerRevenge(x, y, 'W');
+        }
+        return;
+    }
     if (specialMode && specialPlayer === 'W') {
         if (board[y][x] === 'W') {
             triggerRevenge(x, y, 'B');
@@ -101,6 +108,7 @@ function handleClick(e) {
         return;
     }
 
+    // 通常ターン
     let flips = getFlips(x, y, player);
     if (flips === 0) return;
 
@@ -143,18 +151,19 @@ function startRevenge(triggeredBy) {
     let level = chainCount >= 3 ? 3 : chainCount;
     document.body.classList.add(`revenge-level-${level}-${specialPlayer === 'B' ? 'black' : 'white'}`);
 
-    if (specialPlayer === 'B') {
+    if (specialPlayer !== player) {
+        // AIが自分の石を選んでリベンジ
         let ownDiscs = [];
         for (let yy = 0; yy < size; yy++)
             for (let xx = 0; xx < size; xx++)
-                if (board[yy][xx] === 'B')
+                if (board[yy][xx] === specialPlayer)
                     ownDiscs.push([xx, yy]);
         if (ownDiscs.length) {
             let [fx, fy] = ownDiscs[Math.floor(Math.random() * ownDiscs.length)];
-            triggerRevenge(fx, fy, 'W');
+            triggerRevenge(fx, fy, specialPlayer === 'B' ? 'W' : 'B');
         }
     } else {
-        messageDiv.innerText = "REVENGE! Click a white disc to flip it.";
+        messageDiv.innerText = `REVENGE! Click a ${specialPlayer === 'B' ? 'black' : 'white'} disc to flip it.`;
     }
 }
 
@@ -165,7 +174,6 @@ function triggerRevenge(x, y, newColor) {
     drawBoard();
 
     if (flips >= 2) {
-        // ここが重要！
         startRevenge(newColor === 'B' ? 'W' : 'B');
     } else {
         specialMode = false;
@@ -185,7 +193,7 @@ function nextTurn() {
             messageDiv.innerText = "Game Over!";
             return;
         }
-        nextTurn(); // 再帰的にターン回し
+        nextTurn();
         return;
     }
     drawBoard();
